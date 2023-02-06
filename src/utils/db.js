@@ -14,7 +14,7 @@ const knex = require('knex')({
 async function get(table, where = {}, options = {}) {
   let records = [];
   try {
-    records = await knex(table).where(where);
+    records = await knex(table).where(where).orderBy('id', 'desc');
   } catch (err) {
     logger.error('db get failed', { table, where }, err);
   }
@@ -24,7 +24,7 @@ async function get(table, where = {}, options = {}) {
 async function getOne(table, where = {}, options = {}) {
   let record = null;
   try {
-    let records = await knex(table).where(where);
+    let records = await knex(table).where(where).orderBy('id', 'desc');;
     record = records[0];
   } catch (err) {
     logger.error('db getOne failed', { table, where }, err);
