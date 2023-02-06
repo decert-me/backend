@@ -1,20 +1,23 @@
 const express = require("express");
 const db = require("../utils/db");
 const { verifySignature } = require("../utils/sign");
-const { withSignature } = require("../middlewares/auth");
+const { withAddress, withSignature } = require("../middlewares/auth");
+const { validateAddress } = require("../utils/func");
 const router = express.Router();
 const Signer = require("../utils/signer");
 const IpfsClient = require("../utils/customIpfsClient");
 const QuestService = require("../services/quest");
 const { fail, succeed } = require("./base");
 const ipfsClient = new IpfsClient();
+const UserChanlengeService = require("../services/userChanlenge");
 
 
 /**
  * Get all Quests.
  */
-router.get("/", async (req, res) => {
+router.get("/", withAddress, async (req, res) => {
   const { isDraft = false, type } = req.query;
+  const address = req.address;
 
   let where = { 'disabled': false };
   where.isDraft = Boolean(isDraft);
@@ -22,7 +25,18 @@ router.get("/", async (req, res) => {
 
   const allQuests = await db.findQuests(where);
 
+  // 获取claim状态
+  if (validateAddress(address)) {
+    const challlenges = await new UserChanlengeService(address).getChanlenges({ 'claimed': true });
+    const claimedQids = challlenges.map(ele => ele.questId);
+    for (let qid of claimedQids) {
+      let idx = allQuests.findIndex(ele => ele.id === qid)
+      if (idx !== -1) allQuests[idx].claimed = true;
+    }
+  }
+
   let quests = allQuests.map(ele => formatQuest(ele));
+
   // let resp = {
   //   code: 0,
   //   msg: 'OK',
@@ -66,6 +80,7 @@ function formatQuest(dbQuest) {
     "tokenId": dbQuest.tokenId === null ? null : Number(dbQuest.tokenId),
     'uri': dbQuest.uri,
     'metadata': dbQuest.metadata,
+    'claimed': dbQuest.claimed || false,
     // 'extraData': dbQuest.extradata,
     // "label": dbQuest.label,
     // "difficulty": dbQuest.difficulty || null,
