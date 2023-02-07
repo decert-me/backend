@@ -47,7 +47,8 @@ router.get("/", withAddress, async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+  let { id } = req.params;
+  id = Number(id);
   // const dbQuest = await _getQuestById(id);
   const dbQuest = await db.getOne('quest', { 'tokenId': id });
 
