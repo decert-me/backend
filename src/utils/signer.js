@@ -19,10 +19,9 @@ class Signer extends ethers.Wallet {
         return this._permit(types, values, QUEST_MINTER_ADDRESS, creator);
     }
 
-    async permitClaimBadge(sender, tokenId) {
-        const types = ['uint256'];
-        const values = [tokenId];
-
+    async permitClaimBadge(sender, values) {
+        const types = ['uint256','uint256'];
+        
         return this._permit(types, values, BADGE_ADDRESS, sender);
     }
 

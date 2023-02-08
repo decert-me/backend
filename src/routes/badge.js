@@ -41,15 +41,19 @@ router.get("/share/:tokenId/:userAddress", async (req, res) => {
  * claim Badge NFT
  */
 router.post("/claim", withSignature, async (req, res) => {
-    let { tokenId } = req.body;
+    let { tokenId, score } = req.body;
     const address = req.address;
 
     tokenId = Number(tokenId);
     if (!func.validateUInt(tokenId)) return fail(res, 'invalid tokenId');
 
-    if (!address && !func.validateAddress(address)) return fail(res, 'invalid addressa');
+    score = Number(score);
+    if (!func.validateUInt(score)) return fail(res, 'invalid score');
 
-    let permitSignature = await new Signer(process.env.SIGNER_PRIVATE_KEY).permitClaimBadge(address, tokenId);
+    if (!address && !func.validateAddress(address)) return fail(res, 'invalid addressa');
+    await new Signer(process.env.SIGNER_PRIVATE_KEY)._signTypedData
+    let permitSignature = await new Signer(process.env.SIGNER_PRIVATE_KEY).permitClaimBadge(address, [tokenId, score]);
+    console.log(address, { tokenId, score });
     return succeed(res, { 'data': permitSignature });
 });
 
