@@ -50,10 +50,9 @@ router.post("/claim", withSignature, async (req, res) => {
     score = Number(score);
     if (!func.validateUInt(score)) return fail(res, 'invalid score');
 
-    if (!address && !func.validateAddress(address)) return fail(res, 'invalid addressa');
-    await new Signer(process.env.SIGNER_PRIVATE_KEY)._signTypedData
+    if (!address || !func.validateAddress(address)) return fail(res, 'invalid address');
     let permitSignature = await new Signer(process.env.SIGNER_PRIVATE_KEY).permitClaimBadge(address, [tokenId, score]);
-    console.log(address, { tokenId, score });
+
     return succeed(res, { 'data': permitSignature });
 });
 
