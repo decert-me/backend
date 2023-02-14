@@ -71,7 +71,7 @@ router.post("/sumbitClaimTweet", withSignature, async (req, res) => {
     if (!quest) return fail(res, 'invalid quest');
 
     // 检查是否重复使用
-    const claimBadgeTweet = await db.get('claim_badge_tweet', { 'url': tweetUrl });
+    const claimBadgeTweet = await db.getOne('claim_badge_tweet', { 'url': tweetUrl });
     if (claimBadgeTweet) return fail(res, 'repeated tweet');
 
     // TODO: 检查用户是否已通过挑战，或已领取SBT
