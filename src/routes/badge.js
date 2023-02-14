@@ -6,6 +6,7 @@ const { fail, succeed } = require("./base");
 const func = require("../utils/func");
 const BadgeService = require("../services/badge");
 const Signer = require("../utils/signer");
+const QuestService = require("../services/quest");
 
 
 /**
@@ -54,6 +55,25 @@ router.post("/claim", withSignature, async (req, res) => {
     let permitSignature = await new Signer(process.env.SIGNER_PRIVATE_KEY).permitClaimBadge(address, [tokenId, score]);
 
     return succeed(res, { 'data': permitSignature });
+});
+
+router.post("/sumbitClaimTweet", withSignature, async (req, res) => {
+    let { tokenId, tweetUrl } = req.body;
+
+    if (!tokenId || !func.validateUInt(Number(tokenId))) return fail(res, 'invalid params');
+    if (!tweetUrl || !func.validateTweetFormat(tweetUrl)) return fail(res, 'invalid params');
+
+    // 检查tokenId是否存在以及可用
+    const quest = await new QuestService().getAvailableQuest(tokenId);
+    if (!quest) return fail(res, 'invalid quest');
+
+    // TODO: 检查用户是否已通过挑战
+
+    // 验证推文内容
+    let isCorrectTweet = await new BadgeService().sumbitClaimTweet(tokenId, tweetUrl);
+    if (!isCorrectTweet) return fail(res, 'unmatch tweet');
+
+    return succeed(res);
 });
 
 module.exports = router;

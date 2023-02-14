@@ -76,6 +76,10 @@ class QuestService {
 
         return challengeId;
     }
+
+    async getAvailableQuest(tokenId) {
+        return await db.getOne('quest', { tokenId, 'disabled': false, 'isDraft': false });
+    }
 }
 
 module.exports = QuestService;

@@ -62,6 +62,13 @@ async function authSignature(data) {
     return false;
 }
 
+async function validateTweetFormat(url) {
+    // 检查tweetUrl格式是否遵循：https://twitter.com/<username>/status/<id>?<other unimportant>
+    let reg = new RegExp('https://twitter.com/.+\/status\/', 'g');
+    let matched = url.match(reg);
+    return matched ? true : false;
+}
+
 module.exports = {
     getChecksumAddress,
     validateOffset,
@@ -70,4 +77,5 @@ module.exports = {
     validateTxHash,
     validateUInt,
     authSignature,
+    validateTweetFormat,
 };
