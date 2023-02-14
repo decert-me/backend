@@ -49,7 +49,6 @@ router.get("/", withAddress, async (req, res) => {
 router.get("/:id", async (req, res) => {
   let { id } = req.params;
   id = Number(id);
-  // const dbQuest = await _getQuestById(id);
   const dbQuest = await db.getOne('quest', { 'tokenId': id });
 
   let quest = formatQuest(dbQuest);
@@ -61,12 +60,6 @@ router.get("/:id", async (req, res) => {
   let resp = quest;
   res.json(resp);
 });
-
-async function _getQuestById(id) {
-  if (!id) return null;
-
-  return (await db.findQuestById(id)) || null;
-}
 
 function formatQuest(dbQuest) {
   if (!dbQuest) return null;
