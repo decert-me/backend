@@ -37,12 +37,26 @@ class BadgeService {
         return badge || null;
     }
 
-    async sumbitClaimTweet(tokenId, tweetURL) {
+    async sumbitClaimTweet(address, tokenId, tweetURL) {
         const tweet = await twitterUtil.getTweetFromURL(tweetURL);
 
         if (!tweet) return false;
 
         const isMatch = await this._checkIfMatchClaimTweet(tokenId, tweet);
+
+        if (isMatch) {
+            // 保存到数据库
+            const claimTweet = {
+                address,
+                tokenId,
+                url: tweetURL,
+                add_ts: new Date().getTime(),
+                airdroped: false,
+            }
+
+            await db.add('claim_badge_tweet', claimTweet);
+        }
+
         return isMatch;
     }
 

@@ -23,7 +23,8 @@ const withSignature = async (req, res, next) => {
   const { address, authorization: signature } = req.headers;
   req.address = address;
 
-  // todo 暂时去掉验证
+  // todo 暂时去掉签名验证
+  if (!address || !func.validateAddress(address)) return res.status(401).send(`Auth failed`);
   // if (!address || !signature) return res.status(401).send(`Auth failed`);
 
   // let bool = await func.authSignature({ address, signature, msg: LOGIN_AUTH_MSG },);

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.5
--- Dumped by pg_dump version 14.5
+-- Dumped from database version 14.6
+-- Dumped by pg_dump version 14.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,6 +16,81 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: claim_badge_tweet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.claim_badge_tweet (
+    id integer NOT NULL,
+    address character varying NOT NULL,
+    "tokenId" character varying NOT NULL,
+    url character varying NOT NULL,
+    add_ts bigint NOT NULL,
+    airdroped boolean DEFAULT false NOT NULL,
+    airdrop_ts bigint DEFAULT 0,
+    airdrop_hash character varying DEFAULT ''::character varying
+);
+
+
+--
+-- Name: COLUMN claim_badge_tweet.address; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.claim_badge_tweet.address IS '用户钱包地址';
+
+
+--
+-- Name: COLUMN claim_badge_tweet."tokenId"; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.claim_badge_tweet."tokenId" IS 'badgeNFT tokenId';
+
+
+--
+-- Name: COLUMN claim_badge_tweet.url; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.claim_badge_tweet.url IS '推文链接地址';
+
+
+--
+-- Name: COLUMN claim_badge_tweet.add_ts; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.claim_badge_tweet.add_ts IS '添加时的时间戳';
+
+
+--
+-- Name: COLUMN claim_badge_tweet.airdrop_ts; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.claim_badge_tweet.airdrop_ts IS '空投时间';
+
+
+--
+-- Name: claim_badge_tweet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.claim_badge_tweet_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: claim_badge_tweet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.claim_badge_tweet_id_seq OWNED BY public.claim_badge_tweet.id;
+
+
 --
 -- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
@@ -27,10 +102,6 @@ CREATE SEQUENCE public.events_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
 
 --
 -- Name: events; Type: TABLE; Schema: public; Owner: -
@@ -237,41 +308,19 @@ COMMENT ON COLUMN public.users."creationTimestamp" IS '创建时间';
 COMMENT ON COLUMN public.users.socials IS '社交账号';
 
 
+--
+-- Name: claim_badge_tweet id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.claim_badge_tweet ALTER COLUMN id SET DEFAULT nextval('public.claim_badge_tweet_id_seq'::regclass);
 
 
 --
--- Name: events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: claim_badge_tweet claim_badge_tweet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.events_id_seq', 1, true);
-
-
---
--- Name: quest_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.quest_id_seq', 1, false);
-
-
---
--- Name: transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.transaction_id_seq', 1, true);
-
-
---
--- Name: user_challenges_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.user_challenges_id_seq', 1, true);
-
-
---
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+ALTER TABLE ONLY public.claim_badge_tweet
+    ADD CONSTRAINT claim_badge_tweet_pkey PRIMARY KEY (id);
 
 
 --
@@ -319,6 +368,13 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX address ON public.users USING btree (address);
+
+
+--
+-- Name: claim_badge_tweet_url; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX claim_badge_tweet_url ON public.claim_badge_tweet USING btree (url);
 
 
 --
